@@ -1,16 +1,40 @@
-"use client";
+
+   "use client";
+
+import { createClient } from "@/lib/supabase";
 
 export default function PricingPage() {
-  function handleUpgrade() {
-    alert("Pro upgrade coming soon! 🚀");
+  async function handleUpgrade() {
+    const supabase = createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("Please log in first.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ plan: "pro" })
+      .eq("id", user.id);
+
+    if (error) {
+      alert("Upgrade error: " + error.message);
+      return;
+    }
+
+    alert("Pro plan activated successfully!");
+
+    window.location.href = "/dashboard";
   }
 
   return (
     <main className="min-h-screen bg-slate-950 text-white px-6 py-12">
-
       <div className="max-w-5xl mx-auto">
 
-        {/* HEADER */}
         <div className="text-center mb-12">
 
           <a
@@ -30,10 +54,10 @@ export default function PricingPage() {
 
         </div>
 
-        {/* PRICING CARDS */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
 
           {/* FREE PLAN */}
+
           <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800">
 
             <h2 className="text-2xl font-bold">
@@ -52,15 +76,10 @@ export default function PricingPage() {
             </p>
 
             <ul className="space-y-4 mt-8 text-slate-300">
-
               <li>✓ 3 resume reviews</li>
-
               <li>✓ Resume match score</li>
-
               <li>✓ Skill matching</li>
-
               <li>✓ Review history</li>
-
             </ul>
 
             <button
@@ -73,6 +92,7 @@ export default function PricingPage() {
           </div>
 
           {/* PRO PLAN */}
+
           <div className="p-8 rounded-2xl bg-blue-950 border-2 border-blue-500 relative">
 
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -99,24 +119,18 @@ export default function PricingPage() {
             </p>
 
             <ul className="space-y-4 mt-8 text-slate-200">
-
               <li>✓ Unlimited resume reviews</li>
-
               <li>✓ Advanced resume feedback</li>
-
               <li>✓ Detailed skill analysis</li>
-
               <li>✓ Missing keyword suggestions</li>
-
               <li>✓ Complete review history</li>
-
             </ul>
 
             <button
               onClick={handleUpgrade}
               className="w-full mt-8 rounded-xl bg-blue-600 px-6 py-3 font-semibold hover:bg-blue-700"
             >
-              Upgrade to Pro — ₹499
+              Activate Pro — ₹499
             </button>
 
           </div>
@@ -124,7 +138,6 @@ export default function PricingPage() {
         </div>
 
       </div>
-
     </main>
   );
 }
