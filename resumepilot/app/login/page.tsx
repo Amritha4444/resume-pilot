@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase";
-export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   const supabase = createClient();
 
